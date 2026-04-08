@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank API Client</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto space-y-8">
+        <h1 class="text-3xl font-bold text-center text-blue-600">Banco</h1>
+
+        <div id="auth-section" class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl mb-4">Login</h2>
+            <input id="user" type="text" placeholder="Username (Email)" class="border p-2 w-full mb-2">
+            <input id="pass" type="password" placeholder="Password" class="border p-2 w-full mb-4">
+            <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded">Entrar</button>
+        </div>
+
+        <div id="transfer-section" class="hidden bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl mb-4">Realizar Transferência</h2>
+            <p class="text-sm text-gray-500 mb-4">Token: <span id="token-status" class="font-mono">---</span></p>
+
+            <input id="receiver_id" type="number" placeholder="ID do Recebedor" class="border p-2 w-full mb-2">
+            <input id="amount" type="number" placeholder="Valor" class="border p-2 w-full mb-2">
+
+            <button onclick="makeTransfer()" class="bg-green-500 text-white px-4 py-2 rounded w-full">
+                Enviar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let token = "";
+
+        async function login() {
+            const formData = new URLSearchParams();
+            formData.append('username', document.getElementById('user').value);
+            formData.append('password', document.getElementById('pass').value);
+
+            const res = await fetch('/auth/login', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                token = data.access_token;
+                document.getElementById('token-status').innerText = "Logado";
+                document.getElementById('transfer-section').classList.remove('hidden');
+                alert("Sucesso!");
+            } else { alert("Falha no login"); }
+        }
+
+        async function makeTransfer() {
+            // busca um nonce fresco do servidor
+            const nonceRes = await fetch('/transactions/nonce', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const { nonce } = await nonceRes.json();
+
+            // faz a transferência enviando o nonce
+            const transferData = {
+                receiver_id: parseInt(document.getElementById('receiver_id').value),
+                amount: parseFloat(document.getElementById('amount').value),
+                nonce: nonce
+            };
+
+            const res = await fetch('/transactions/transfer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(transferData)
+            });
+
+            if (res.ok) alert("Transferência concluída!");
+            else alert("Erro na transação ou nonce já utilizado.");
+        }
+    </script>
+</body>
+</html>
