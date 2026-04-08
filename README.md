@@ -6,7 +6,6 @@ Projeto para a avaliação final da disciplina "Criptografia e Trusted Computing
 
 **Aplicação:** Sistema bancário feito com FastAPI + Prisma (MySQL) para mostrar a implementação de proteção contra **Replay Attack**.
 
-
 ## Estrutura
 
 ```
@@ -22,6 +21,8 @@ bank-api/
 │       └── transactions.py  # /transactions/transfer + /history + /nonce
 ├── prisma/
 │   └── schema.prisma
+├── static/
+│   └── index.html           # Interface do sistema
 ├── .env.example
 └── requirements.txt
 ```
@@ -38,6 +39,12 @@ prisma generate # cria o
 prisma db push # cria as tabelas
 uvicorn app.main:app --reload
 ```
+
+## Interface
+
+Acesse a interface via: http://localhost:8000
+![](https://iili.io/BYK8pxp.png)
+
 
 Acesse o Swagger UI em: http://localhost:8000/docs
 
