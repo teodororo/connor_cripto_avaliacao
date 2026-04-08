@@ -47,6 +47,7 @@ Acesse a interface via: http://localhost:8000
 
 
 Acesse o Swagger UI em: http://localhost:8000/docs
+![](https://iili.io/BYi5ya1.png)
 
 ## Segurança implementada: Proteção contra Replay Attack
 
